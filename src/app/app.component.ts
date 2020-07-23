@@ -1,45 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Observable, from, Subscription } from 'rxjs';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  isAuth = false
-  lastUpdate = new Promise((resolve, reject) => {
-    const date = new Date();
-    setTimeout(
-      () => {
-        resolve(date);
-      }, 2000
-    );
-  });
-
-  appareils = [
-    {
-      appareilName: 'Akai mpc',
-      appareilStatus: 'éteint'
-    },
-    {
-      appareilName: 'Akai fire',
-      appareilStatus: 'éteint'
-    },
-    {
-      appareilName: 'Launchkey 49',
-      appareilStatus: 'éteint'
-    },
-  ];
-
-  constructor() {
-    setTimeout(
-      () => {
-        this.isAuth = true;
-      }, 4000
-    );
+//Implementation de OnInit
+export class AppComponent implements OnInit, OnDestroy {
+  // Appelée quand un component est détruit
+  ngOnDestroy(): void {
+    this.counterSubscription.unsubscribe;
   }
 
-  onAllumer() {
-    console.log('On allume tout !');
+
+  secondes: number;
+  counterSubscription: Subscription;
+
+  //  Recuperation des données depuis le service.
+  ngOnInit() {
+    const counter = interval(1000);
+
+    this.counterSubscription = counter.subscribe(
+      (value) => {
+        this.secondes = value;
+      },
+      (error) => {
+        console.log("An error occured! : " + error);
+      },
+      () => {
+        console.log("Observable complete.");
+      }
+    )
   }
 }
